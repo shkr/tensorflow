@@ -30,6 +30,15 @@ config_setting(
 )
 
 config_setting(
+    name = "android_arm64",
+    values = {
+        "crosstool_top": "//external:android/crosstool",
+        "android_cpu": "arm64-v8a",
+    },
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
     name = "darwin",
     values = {"cpu": "darwin"},
     visibility = ["//visibility:public"],
@@ -87,6 +96,7 @@ filegroup(
         "//tensorflow/contrib:all_files",
         "//tensorflow/contrib/bayesflow:all_files",
         "//tensorflow/contrib/copy_graph:all_files",
+        "//tensorflow/contrib/cudnn_rnn:all_files",
         "//tensorflow/contrib/distributions:all_files",
         "//tensorflow/contrib/factorization:all_files",
         "//tensorflow/contrib/factorization/kernels:all_files",
@@ -94,6 +104,7 @@ filegroup(
         "//tensorflow/contrib/ffmpeg/default:all_files",
         "//tensorflow/contrib/framework:all_files",
         "//tensorflow/contrib/graph_editor:all_files",
+        "//tensorflow/contrib/grid_rnn:all_files",
         "//tensorflow/contrib/layers:all_files",
         "//tensorflow/contrib/layers/kernels:all_files",
         "//tensorflow/contrib/learn:all_files",
@@ -151,11 +162,14 @@ filegroup(
         "//tensorflow/python:all_files",
         "//tensorflow/python/debug:all_files",
         "//tensorflow/python/kernel_tests:all_files",
+        "//tensorflow/python/saved_model:all_files",
         "//tensorflow/python/tools:all_files",
         "//tensorflow/tensorboard:all_files",
         "//tensorflow/tensorboard/app:all_files",
         "//tensorflow/tensorboard/backend:all_files",
         "//tensorflow/tensorboard/components:all_files",
+        "//tensorflow/tensorboard/components/vz-data-summary:all_files",
+        "//tensorflow/tensorboard/components/vz-projector:all_files",
         "//tensorflow/tensorboard/lib:all_files",
         "//tensorflow/tensorboard/lib/python:all_files",
         "//tensorflow/tensorboard/scripts:all_files",
@@ -163,6 +177,7 @@ filegroup(
         "//tensorflow/tools/docker:all_files",
         "//tensorflow/tools/docker/notebooks:all_files",
         "//tensorflow/tools/docs:all_files",
+        "//tensorflow/tools/git:all_files",
         "//tensorflow/tools/proto_text:all_files",
         "//tensorflow/tools/test:all_files",
         "//tensorflow/user_ops:all_files",

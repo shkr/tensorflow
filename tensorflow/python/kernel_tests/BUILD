@@ -36,6 +36,8 @@ py_tests(
         "determinant_op_test.py",
         "edit_distance_op_test.py",
         "fifo_queue_test.py",
+        "fractional_avg_pool_op_test.py",
+        "fractional_max_pool_op_test.py",
         "identity_op_py_test.py",
         "in_topk_op_test.py",
         "io_ops_test.py",
@@ -71,12 +73,18 @@ py_tests(
         "variables_test.py",
         "where_op_test.py",
     ],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
 )
 
 cuda_py_tests(
     name = "cast_op_test",
     size = "small",
     srcs = ["cast_op_test.py"],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
     tags = ["noasan"],
 )
 
@@ -84,6 +92,9 @@ cuda_py_test(
     name = "dense_update_ops_no_tsan_test",
     size = "small",
     srcs = ["dense_update_ops_no_tsan_test.py"],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
     tags = ["notsan"],
 )
 
@@ -91,6 +102,9 @@ tf_py_test(
     name = "diag_op_test",
     size = "medium",
     srcs = ["diag_op_test.py"],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
     shard_count = 2,
 )
 
@@ -99,7 +113,7 @@ py_tests(
     size = "small",
     srcs = ["reader_ops_test.py"],
     additional_deps = [
-        "//tensorflow/python:lib",
+        "//tensorflow:tensorflow_py",
     ],
 )
 
@@ -178,6 +192,9 @@ cuda_py_tests(
         "xent_op_test.py",
         "zero_division_test.py",
     ],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
 )
 
 cuda_py_tests(
@@ -195,12 +212,25 @@ cuda_py_tests(
         "pooling_ops_test.py",
         "random_gamma_test.py",
         "rnn_test.py",
-        "scatter_ops_test.py",
         "seq2seq_test.py",
         "slice_op_test.py",
         "sparse_matmul_op_test.py",
         "sparse_ops_test.py",
         "sparse_tensor_dense_matmul_op_test.py",
+    ],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
+)
+
+cuda_py_tests(
+    name = "large_kernel_tests",
+    size = "large",
+    srcs = [
+        "scatter_ops_test.py",
+    ],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
     ],
 )
 
@@ -210,6 +240,9 @@ cuda_py_test(
     name = "extract_image_patches_grad_test",
     size = "medium",
     srcs = ["extract_image_patches_grad_test.py"],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
     tags = ["notap"],  # http://b/31080670
 )
 
@@ -217,6 +250,9 @@ cuda_py_test(
     name = "concat_op_test",
     size = "medium",
     srcs = ["concat_op_test.py"],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
     tags = ["notsan"],  # http://b/30445083
 )
 
@@ -226,13 +262,25 @@ cuda_py_tests(
     srcs = [
         "batch_matrix_band_part_op_test.py",
         "conv_ops_3d_test.py",
-        "cwise_ops_test.py",
         "embedding_ops_test.py",
         "linalg_grad_test.py",
         "svd_op_test.py",
     ],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
+    shard_count = 20,
+)
+
+cuda_py_test(
+    name = "cwise_ops_test",
+    size = "medium",
+    srcs = ["cwise_ops_test.py"],
+    additional_deps = [
+        "//tensorflow:tensorflow_py",
+    ],
     shard_count = 50,
-    tags = ["notap"],  # b/30226163
+    tags = ["notap"],  # http://b/30226163
 )
 
 filegroup(

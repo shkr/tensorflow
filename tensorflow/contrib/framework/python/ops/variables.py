@@ -194,7 +194,7 @@ def local_variable(initial_value, validate_shape=True, name=None):
 
 
 @contrib_add_arg_scope
-def variable(name, shape=None, dtype=dtypes.float32, initializer=None,
+def variable(name, shape=None, dtype=None, initializer=None,
              regularizer=None, trainable=True, collections=None,
              caching_device=None, device=None):
   """Gets an existing variable with these parameters or creates a new one.
@@ -526,6 +526,12 @@ def assign_from_checkpoint(model_path, var_list):
         name=placeholder_name)
     assign_ops.append(var.assign(placeholder_value))
 
+    if var.get_shape() != var_value.shape:
+      raise ValueError(
+          'Total size of new array must be unchanged for %s '
+          'lh_shape: [%s], rh_shape: [%s]'
+          % (checkpoint_var_name, str(var_value.shape), str(var.get_shape())))
+
     feed_dict[placeholder_value] = var_value.reshape(var.get_shape())
 
   assign_op = control_flow_ops.group(*assign_ops)
@@ -568,7 +574,7 @@ def assign_from_checkpoint_fn(model_path, var_list, ignore_missing_vars=False,
         available_vars[var] = var_dict[var]
       else:
         logging.warning(
-            'Variable %s missing in checkpoint %s' % (var, model_path))
+            'Variable %s missing in checkpoint %s', var, model_path)
     var_list = available_vars
   saver = tf_saver.Saver(var_list, reshape=reshape_variables)
   def callback(session):

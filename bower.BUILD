@@ -423,6 +423,14 @@ filegroup(
 )
 
 filegroup(
+    name = "paper_listbox",
+    srcs = [
+        "index.html",
+        "paper-listbox.html",
+    ],
+)
+
+filegroup(
     name = "paper_material",
     srcs = [
         "index.html",

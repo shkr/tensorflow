@@ -46,25 +46,25 @@ class Poisson(distribution.Distribution):
 
   def __init__(self,
                lam,
-               validate_args=True,
-               allow_nan_stats=False,
+               validate_args=False,
+               allow_nan_stats=True,
                name="Poisson"):
     """Construct Poisson distributions.
 
     Args:
       lam: Floating point tensor, the rate parameter of the
         distribution(s). `lam` must be positive.
-      validate_args: Whether to assert that `lam > 0` as well as inputs to
-        pmf computations are non-negative integers. If validate_args is
-        `False`, then `pmf` computations might return NaN, as well as
-        can be evaluated at any real value.
-      allow_nan_stats:  Boolean, default `False`.  If `False`, raise an
+      validate_args: `Boolean`, default `False`.  Whether to assert that
+        `lam > 0` as well as inputs to pmf computations are non-negative
+        integers. If validate_args is `False`, then `pmf` computations might
+        return `NaN`, but can be evaluated at any real value.
+      allow_nan_stats: `Boolean`, default `True`.  If `False`, raise an
         exception if a statistic (e.g. mean/mode/etc...) is undefined for any
         batch member.  If `True`, batch members with valid parameters leading to
         undefined statistics will return NaN for this statistic.
       name: A name for this distribution.
     """
-    with ops.name_scope(name, values=[lam]):
+    with ops.name_scope(name, values=[lam]) as ns:
       with ops.control_dependencies([check_ops.assert_positive(lam)] if
                                     validate_args else []):
         self._lam = array_ops.identity(lam, name="lam")
@@ -72,9 +72,10 @@ class Poisson(distribution.Distribution):
             dtype=self._lam.dtype,
             parameters={"lam": self._lam},
             is_continuous=False,
+            is_reparameterized=False,
             validate_args=validate_args,
             allow_nan_stats=allow_nan_stats,
-            name=name)
+            name=ns)
 
   @property
   def lam(self):
@@ -121,7 +122,7 @@ class Poisson(distribution.Distribution):
 
   def _assert_valid_sample(self, x, check_integer=True):
     if not self.validate_args: return x
-    with ops.name_scope('check_x', values=[x]):
+    with ops.name_scope("check_x", values=[x]):
       dependencies = [check_ops.assert_non_negative(x)]
       if check_integer:
         dependencies += [distribution_util.assert_integer_form(

@@ -31,6 +31,7 @@ from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import check_ops
 from tensorflow.python.ops import control_flow_ops
 from tensorflow.python.ops import math_ops
+from tensorflow.python.ops import nn
 from tensorflow.python.ops import random_ops
 
 
@@ -98,7 +99,7 @@ class Beta(distribution.Distribution):
 
   """
 
-  def __init__(self, a, b, validate_args=True, allow_nan_stats=False,
+  def __init__(self, a, b, validate_args=False, allow_nan_stats=True,
                name="Beta"):
     """Initialize a batch of Beta distributions.
 
@@ -110,10 +111,10 @@ class Beta(distribution.Distribution):
       b:  Positive floating point tensor with shape broadcastable to
         `[N1,..., Nm]` `m >= 0`.  Defines this as a batch of `N1 x ... x Nm`
          different Beta distributions.
-      validate_args: Whether to assert valid values for parameters `a` and `b`,
-        and `x` in `prob` and `log_prob`.  If `False`, correct behavior is not
-        guaranteed.
-      allow_nan_stats:  Boolean, default `False`.  If `False`, raise an
+      validate_args: `Boolean`, default `False`.  Whether to assert valid
+        values for parameters `a`, `b`, and `x` in `prob` and `log_prob`.
+        If `False` and inputs are invalid, correct behavior is not guaranteed.
+      allow_nan_stats: `Boolean`, default `True`.  If `False`, raise an
         exception if a statistic (e.g. mean/mode/etc...) is undefined for any
         batch member.  If `True`, batch members with valid parameters leading to
         undefined statistics will return NaN for this statistic.
@@ -130,7 +131,7 @@ class Beta(distribution.Distribution):
     ```
 
     """
-    with ops.name_scope(name, values=[a, b]):
+    with ops.name_scope(name, values=[a, b]) as ns:
       with ops.control_dependencies([
           check_ops.assert_positive(a),
           check_ops.assert_positive(b),
@@ -145,7 +146,15 @@ class Beta(distribution.Distribution):
             parameters={"a": self._a, "b": self._b, "a_b_sum": self._a_b_sum},
             validate_args=validate_args,
             allow_nan_stats=allow_nan_stats,
-            name=name)
+            is_continuous=True,
+            is_reparameterized=False,
+            name=ns)
+
+  @staticmethod
+  def _param_shapes(sample_shape):
+    return dict(
+        zip(("a", "b"), ([ops.convert_to_tensor(
+            sample_shape, dtype=dtypes.int32)] * 2)))
 
   @property
   def a(self):
@@ -195,6 +204,12 @@ class Beta(distribution.Distribution):
 
   def _prob(self, x):
     return math_ops.exp(self._log_prob(x))
+
+  def _log_cdf(self, x):
+    return math_ops.log(self._cdf(x))
+
+  def _cdf(self, x):
+    return math_ops.betainc(self.a, self.b, x)
 
   def _entropy(self):
     return (math_ops.lgamma(self.a) -
@@ -264,3 +279,21 @@ distribution_util.append_class_fun_doc(Beta.mode, doc_str="""
     and `NaN` otherwise. If `self.allow_nan_stats` is `False`, an exception
     will be raised rather than returning `NaN`.
 """)
+
+
+class BetaWithSoftplusAB(Beta):
+  """Beta with softplus transform on `a` and `b`."""
+
+  def __init__(self,
+               a,
+               b,
+               validate_args=False,
+               allow_nan_stats=True,
+               name="BetaWithSoftplusAB"):
+    with ops.name_scope(name, values=[a, b]) as ns:
+      super(BetaWithSoftplusAB, self).__init__(
+          a=nn.softplus(a),
+          b=nn.softplus(b),
+          validate_args=validate_args,
+          allow_nan_stats=allow_nan_stats,
+          name=ns)

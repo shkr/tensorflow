@@ -302,7 +302,7 @@ class QueueBase(object):
     At runtime, this operation may raise an error if the queue is
     [closed](#QueueBase.close) before or during its execution. If the
     queue is closed before this operation runs,
-    `tf.errors.AbortedError` will be raised. If this operation is
+    `tf.errors.CancelledError` will be raised. If this operation is
     blocked, and either (i) the queue is closed by a close operation
     with `cancel_pending_enqueues=True`, or (ii) the session is
     [closed](../../api_docs/python/client.md#Session.close),
@@ -340,7 +340,7 @@ class QueueBase(object):
     At runtime, this operation may raise an error if the queue is
     [closed](#QueueBase.close) before or during its execution. If the
     queue is closed before this operation runs,
-    `tf.errors.AbortedError` will be raised. If this operation is
+    `tf.errors.CancelledError` will be raised. If this operation is
     blocked, and either (i) the queue is closed by a close operation
     with `cancel_pending_enqueues=True`, or (ii) the session is
     [closed](../../api_docs/python/client.md#Session.close),
@@ -1045,14 +1045,14 @@ def initialize_all_tables(name="init_all_tables"):
   return control_flow_ops.no_op(name=name)
 
 
-ops.NoGradient("LookupTableFind")
-ops.NoGradient("LookupTableInsert")
-ops.NoGradient("LookupTableSize")
-ops.NoGradient("HashTable")
-ops.NoGradient("InitializeTable")
-ops.NoGradient("InitializeTableFromTextFile")
-ops.NoGradient("MutableHashTable")
-ops.NoGradient("MutableHashTableOfTensors")
+ops.NotDifferentiable("LookupTableFind")
+ops.NotDifferentiable("LookupTableInsert")
+ops.NotDifferentiable("LookupTableSize")
+ops.NotDifferentiable("HashTable")
+ops.NotDifferentiable("InitializeTable")
+ops.NotDifferentiable("InitializeTableFromTextFile")
+ops.NotDifferentiable("MutableHashTable")
+ops.NotDifferentiable("MutableHashTableOfTensors")
 
 
 ops.RegisterShape("QueueSize")(common_shapes.scalar_shape)

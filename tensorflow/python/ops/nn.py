@@ -111,6 +111,7 @@ concatenated.
 @@conv2d_transpose
 @@conv1d
 @@conv3d
+@@conv3d_transpose
 
 ## Pooling
 
@@ -132,6 +133,8 @@ to the `Convolution` section for details about the padding calculation.
 @@max_pool_with_argmax
 @@avg_pool3d
 @@max_pool3d
+@@fractional_avg_pool
+@@fractional_max_pool
 
 ## Morphological filtering
 
