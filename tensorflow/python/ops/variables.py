@@ -327,6 +327,7 @@ class Variable(object):
             self._snapshot = array_ops.identity(self._variable, name="read")
 
     ops.add_to_collections(collections, self)
+    self._variable.op.node_def.attr["collection"] = collections
     self._caching_device = caching_device
     self._save_slice_info = None
 
